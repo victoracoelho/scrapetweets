@@ -9,6 +9,8 @@ import string
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.feature_extraction.text import TfidfTransformer
 import collections
+from googletrans import Translator
+import itertools
 
 
 atual = datetime.now().date()
@@ -17,60 +19,50 @@ inicio = atual.replace(day=atual.day - 1)
 
 limit = 1000
 lang = 'portuguese'
+twt = 'bolsonaro'
 
 tweets = query_tweets('bolsonaro', begindate=inicio, enddate=atual, limit=limit, lang=lang)
 
 df = pd.DataFrame(t.__dict__ for t in tweets)
 
-data = pd.DataFrame(df['text'])
+data = pd.Series(df['text'])
 
 phrases = list(df['text'])
 
 data.describe()
 
-
+trans = Translator()
 
 def txt_process(txt):
     nopont = [char for char in txt if char not in string.punctuation]
     nopont = ''.join(nopont)
-    sms = [word for word in nopont.split() if word.lower() not in stopwords.words('portuguese')]
+    sms = [word for word in nopont.split() if word.lower() not in twt]
+    sms = [word for word in sms if word.lower() not in stopwords.words('portuguese')]
     return sms
 
 teste = data.apply(txt_process)
 
+new_lista_teste = []
+lista_teste = list(teste)
 
-counter = collections.Counter(teste[0])
+new_lista_teste = sum(lista_teste)
+array_teste = np.array(new_lista_teste)
+
+
+counter = collections.Counter(array_teste)
 
 print(counter.most_common(n=50))
 
-lista1 = list(counter.values())
-lista2 = list(counter.keys())
-lista3 = list(counter.most_common())
+lista_words = []
+lista_num = []
 
+for p, v in counter.most_common(n=50):
+    lista_words.append(p)
+    lista_num.append(v)
 
 
 plt.figure(figsize=(12,6))
-plt.bar(lista2[21:40], lista1[21:40])
-
-
-
-
-
-### CÓDIGO EM ESTUDO...
-'''proc = CountVectorizer(analyzer=txt_process).fit(data)
-len(proc.vocabulary_)
-
-proc_transform = proc.transform(data)
-proc_transform.shape    
-
-tfidf = TfidfTransformer()
-tfidf = tfidf.fit(proc_transform)'''
-
-
-
-
-
-
+plt.bar(lista_words[:15], lista_num[:15])
 
 
 

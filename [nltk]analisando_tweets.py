@@ -3,13 +3,10 @@ import numpy as np
 import matplotlib.pyplot as plt
 from twitterscraper import query_tweets
 from datetime import datetime
-import nltk
 from nltk.corpus import stopwords
 import string
-from sklearn.feature_extraction.text import CountVectorizer
-from sklearn.feature_extraction.text import TfidfTransformer
 import collections
-import itertools
+import seaborn as sns
 
 
 ### DEFININDO OS PERÍODOS UTILIZADOS PARA OS TWEETS.... Data atual do sistema como fim do período e um dia atrás como início 
@@ -20,7 +17,11 @@ inicio = atual.replace(day=atual.day - 1)
 ### DEFININDO LIMITE DE TWEETS A SEREM OBSERVADOS, LÍNGUA DOS TWEETS E PALAVRAS CHAVE PARA MANIPULAÇÃO AO FINAL
 limit = 1000
 lang = 'portuguese'
-twt = 'bolsonaro'
+twt = ['bolsonaro', 'jair', 'jairbolsonaro', '…', 'pra', 'presidente', 'q', 'vai', 'vc', 'ser', 
+       'Presidente', 'ter', 'tá', 'pode', 'quer', 'la', 'pq', 'aqui', 'ainda', 'porque', 'aí', 
+       'todos', 'cara', 'gente', 'pessoas', 'nada', 'tudo', 'todo', 'el', 'agora', 'ver', 'en', 
+       'faz', 'falar', 'outro', 'un', 'fala', 'fazer', 'ficar', 'tempo', 'vcs', 'fazendo', 
+       'dá', 'dia', 'pro', 'y']
 
 ### CAPTANDO OS TWEETS
 tweets = query_tweets('bolsonaro', begindate=inicio, enddate=atual, limit=limit, lang=lang)
@@ -45,10 +46,10 @@ def txt_process(txt):
 teste = data.apply(txt_process)
 
 ### TRANSFORMAÇÃO DA SÉRIE EM LISTA, DEPOIS EM ARRAY
-new_lista_teste = []
 lista_teste = list(teste)
 
-new_lista_teste = sum(lista_teste)
+new_lista_teste = []
+new_lista_teste = sum(lista_teste, new_lista_teste)
 array_teste = np.array(new_lista_teste)
 
 ### APLICANDO O CONTADOR DE PALAVRAS MAIS DIGITADAS
@@ -64,8 +65,10 @@ for p, v in counter.most_common(n=50):
     lista_num.append(v)
 
 ### PLOTANDO O GRÁFICO COM AS PALAVRAS MAIS DIGITADAS
+sns.barplot(lista_words[:8], lista_num[:8]) #seaborn
+
 plt.figure(figsize=(12,6))
-plt.bar(lista_words[:15], lista_num[:15])
+plt.bar(lista_words[:15], lista_num[:15]) #matplotlib
 
 
 
